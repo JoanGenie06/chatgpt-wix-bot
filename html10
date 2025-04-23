@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>ChatGPT 聊天機器人</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    #chatbox {
+      width: 100%;
+      max-width: 600px;
+      height: 400px;
+      overflow-y: auto;
+      background: white;
+      border: 1px solid #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .message {
+      margin-bottom: 10px;
+    }
+    .user { color: blue; }
+    .bot { color: green; }
+    input, button {
+      padding: 10px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h2>ChatGPT 聊天機器人</h2>
+  <div id="chatbox"></div>
+  <input type="text" id="userInput" placeholder="輸入你的訊息..." />
+  <button onclick="sendMessage()">送出</button>
+
+  <script>
+    const chatbox = document.getElementById('chatbox');
+
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const message = input.value.trim();
+      if (!message) return;
+
+      chatbox.innerHTML += `<div class="message user"><strong>你:</strong> ${message}</div>`;
+      input.value = '';
+      chatbox.scrollTop = chatbox.scrollHeight;
+
+      // 呼叫 OpenAI API
+      // 改寫原本 fetch 的地方
+const response = await fetch("/api/chat", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ message })
+});
+
+      const data = await response.json();
+      const reply = data.choices?.[0]?.message?.content || '出現錯誤';
+      chatbox.innerHTML += `<div class="message bot"><strong>機器人:</strong> ${reply}</div>`;
+      chatbox.scrollTop = chatbox.scrollHeight;
+    }
+  </script>
+</body>
+</html>
